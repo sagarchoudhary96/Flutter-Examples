@@ -7,7 +7,7 @@ This is an example app from google CodeLab [writing your first flutter app](http
 
 ## Setup
 
-1. Follow the steps to setup Flutter and Repository from the main [Readme]().
+1. Follow the steps to setup Flutter and Repository from the main [Readme](https://github.com/sagarchoudhary96/Flutter-Examples/blob/master/README.md).
 
 2. Navigate to **startup_namer** project directory in terminal.
 

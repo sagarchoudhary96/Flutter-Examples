@@ -4,8 +4,17 @@ import 'package:unit_converter/unit.dart';
 
 final icon = Icons.cake;
 
-class CategoryRoute extends StatelessWidget {
+class CategoryRoute extends StatefulWidget {
   const CategoryRoute();
+
+  @override
+  State createState() => _CategoryRouteState();
+}
+
+
+class _CategoryRouteState extends State<CategoryRoute> {
+
+  final _categories = <Category>[];
 
   static const _categoryNames = <String>[
     'Length',
@@ -29,11 +38,26 @@ class CategoryRoute extends StatelessWidget {
     Colors.red,
   ];
 
+
+  @override
+  void initState() {
+    super.initState();
+
+    for (var i = 0; i < _categoryNames.length; i++) {
+      _categories.add(Category(
+        name: _categoryNames[i],
+        icon: icon,
+        color: _baseColors[i],
+        units: _retrieveUnitList(_categoryNames[i]),
+      ));
+    }
+  }
+
   /// Build listView from caterogies list
-  Widget _listViewBuilder(List<Widget> categories) {
+  Widget _listViewBuilder() {
     return ListView.builder(
-      itemBuilder: (BuildContext context, int index) => categories[index],
-      itemCount: categories.length,
+      itemBuilder: (BuildContext context, int index) => _categories[index],
+      itemCount: _categories.length,
     );
   }
 
@@ -51,19 +75,10 @@ class CategoryRoute extends StatelessWidget {
   /// builds the category routes
   @override
   Widget build(BuildContext context) {
-    final categories = <Category>[];
-    for (var i = 0; i < _categoryNames.length; i++) {
-      categories.add(Category(
-        name: _categoryNames[i],
-        icon: icon,
-        color: _baseColors[i],
-        units: _retrieveUnitList(_categoryNames[i]),
-      ));
-    }
 
     final listView = Container(
       color: Colors.white10,
-      child: _listViewBuilder(categories),
+      child: _listViewBuilder(),
     );
 
     final appBar = AppBar(

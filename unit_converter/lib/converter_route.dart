@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:unit_converter/unit.dart';
 
-class ConverterRoute extends StatelessWidget {
+
+class ConverterRoute extends StatefulWidget {
   final String name;
   final Color color;
   final List<Unit> units;
@@ -15,11 +16,18 @@ class ConverterRoute extends StatelessWidget {
         assert(name != null),
         assert(color != null);
 
+
+  @override
+  State createState() => _ConverterRouteState();
+}
+
+class _ConverterRouteState extends State<ConverterRoute> {
+
   @override
   Widget build(BuildContext context) {
-    final unitWidgets = units.map((Unit unit) {
+    final unitWidgets = widget.units.map((Unit unit) {
       return Container(
-        color: color,
+        color: widget.color,
         margin: EdgeInsets.all(8.0),
         padding: EdgeInsets.all(8.0),
         child: Column(

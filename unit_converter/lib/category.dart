@@ -26,6 +26,11 @@ class Category extends StatelessWidget {
 
   /// Navigates to the ConverterRoute.
   void _navigateToConverter(BuildContext context) {
+
+    if (Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    }
+
     Navigator
         .of(context)
         .push(MaterialPageRoute(builder: (BuildContext context) {
@@ -40,6 +45,7 @@ class Category extends StatelessWidget {
           backgroundColor: color,
         ),
         body: ConverterRoute(units: units, name: name, color: color),
+        resizeToAvoidBottomPadding: false,
       );
     }));
   }

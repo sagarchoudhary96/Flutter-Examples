@@ -26,20 +26,15 @@ class Category extends StatelessWidget {
 
   /// Navigates to the ConverterRoute.
   void _navigateToConverter(BuildContext context) {
-
-    if (Navigator.of(context).canPop()) {
-      Navigator.of(context).pop();
-    }
-
     Navigator
         .of(context)
-        .push(MaterialPageRoute(builder: (BuildContext context) {
+        .push(MaterialPageRoute<Null>(builder: (BuildContext context) {
       return Scaffold(
         appBar: AppBar(
           elevation: 1.0,
           title: Text(
             name,
-            style: Theme.of(context).textTheme.display1,
+            style: TextStyle(fontSize: 30.0, color: Colors.white),
           ),
           centerTitle: true,
           backgroundColor: color,
@@ -58,8 +53,8 @@ class Category extends StatelessWidget {
       child: Container(
         height: _height,
         child: InkWell(
-          highlightColor: color,
-          splashColor: color,
+          highlightColor: color['highlight'],
+          splashColor: color['splash'],
           onTap: () {
             _navigateToConverter(context);
           },

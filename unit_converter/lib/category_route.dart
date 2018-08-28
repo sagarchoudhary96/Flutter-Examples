@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:unit_converter/category.dart';
 import 'package:unit_converter/unit.dart';
+import 'package:unit_converter/unit_converter.dart';
+import 'category_tile.dart';
+import 'backdrop.dart';
 
 final icon = Icons.cake;
 
@@ -12,6 +15,9 @@ class CategoryRoute extends StatefulWidget {
 }
 
 class _CategoryRouteState extends State<CategoryRoute> {
+  Category _defaultCategory;
+  Category _currentCategory;
+
   final _categories = <Category>[];
 
   static const _categoryNames = <String>[
@@ -66,19 +72,31 @@ class _CategoryRouteState extends State<CategoryRoute> {
     super.initState();
 
     for (var i = 0; i < _categoryNames.length; i++) {
-      _categories.add(Category(
+      var category = Category(
         name: _categoryNames[i],
         icon: icon,
         color: _baseColors[i],
         units: _retrieveUnitList(_categoryNames[i]),
-      ));
+      );
+
+      if (i == 0) {
+        _defaultCategory = category;
+      }
+      _categories.add(category);
     }
+  }
+
+  /// function to call on category tap
+  void _onCategoryTap(Category category) {
+    setState(() {
+      _currentCategory = category;
+    });
   }
 
   /// Build listView from caterogies list
   Widget _listViewBuilder() {
     return ListView.builder(
-      itemBuilder: (BuildContext context, int index) => _categories[index],
+      itemBuilder: (BuildContext context, int index) => CategoryTile(category: _categories[index], onTap: _onCategoryTap,),
       itemCount: _categories.length,
     );
   }
@@ -102,15 +120,15 @@ class _CategoryRouteState extends State<CategoryRoute> {
       child: _listViewBuilder(),
     );
 
-    final appBar = AppBar(
-      title: Text(
-        "Unit Converter",
-        style: TextStyle(fontSize: 25.0, color: Colors.white),
-      ),
-      centerTitle: true,
-      backgroundColor: Colors.blue,
+    return Backdrop(
+      currentCategory:
+      _currentCategory == null ? _defaultCategory : _currentCategory,
+      frontPanel: _currentCategory == null
+          ? UnitConverter(category: _defaultCategory)
+          : UnitConverter(category: _currentCategory),
+      backPanel: listView,
+      frontTitle: Text('Unit Converter'),
+      backTitle: Text('Select a Category'),
     );
-
-    return Scaffold(appBar: appBar, body: listView);
   }
 }

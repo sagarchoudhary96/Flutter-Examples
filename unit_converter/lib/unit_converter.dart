@@ -8,9 +8,7 @@ const _padding = EdgeInsets.all(16.0);
 class UnitConverter extends StatefulWidget {
   final Category category;
 
-  const UnitConverter({
-    @required this.category
-  })  : assert(category != null);
+  const UnitConverter({@required this.category}) : assert(category != null);
 
   @override
   _UnitConverterState createState() => _UnitConverterState();
@@ -32,6 +30,16 @@ class _UnitConverterState extends State<UnitConverter> {
     super.initState();
     _createDropDownItems();
     _setDefaultValues();
+  }
+
+  @override
+  void didUpdateWidget(UnitConverter old) {
+    super.didUpdateWidget(old);
+    // We update our [DropdownMenuItem] units when we switch [Categories].
+    if (old.category != widget.category) {
+      _createDropDownItems();
+      _setDefaultValues();
+    }
   }
 
   /// Create DropDown menu of list of units
@@ -230,16 +238,29 @@ class _UnitConverterState extends State<UnitConverter> {
 
   @override
   Widget build(BuildContext context) {
+    final converter = ListView(
+      children: <Widget>[
+        _inputWidget(),
+        _compareArrowWidget(),
+        _outputWidget()
+      ],
+    );
+
     return Padding(
       padding: _padding,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          _inputWidget(),
-          _compareArrowWidget(),
-          _outputWidget()
-        ],
-      ),
+      child: OrientationBuilder(
+          builder: (BuildContext context, Orientation orientation) {
+        if (orientation == Orientation.portrait) {
+          return converter;
+        } else {
+          return Center(
+            child: Container(
+              width: 450.0,
+              child: converter,
+            ),
+          );
+        }
+      }),
     );
   }
 }

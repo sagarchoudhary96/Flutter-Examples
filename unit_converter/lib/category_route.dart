@@ -4,6 +4,8 @@ import 'package:unit_converter/unit.dart';
 import 'package:unit_converter/unit_converter.dart';
 import 'category_tile.dart';
 import 'backdrop.dart';
+import 'dart:async';
+import 'dart:convert';
 
 final icon = Icons.cake;
 
@@ -19,17 +21,6 @@ class _CategoryRouteState extends State<CategoryRoute> {
   Category _currentCategory;
 
   final _categories = <Category>[];
-
-  static const _categoryNames = <String>[
-    'Length',
-    'Area',
-    'Volume',
-    'Mass',
-    'Time',
-    'Digital Storage',
-    'Energy',
-    'Currency',
-  ];
 
   static const _baseColors = <ColorSwatch>[
     ColorSwatch(0xFF6AB7A8, {
@@ -68,22 +59,39 @@ class _CategoryRouteState extends State<CategoryRoute> {
   ];
 
   @override
-  void initState() {
-    super.initState();
+  Future<void> didChangeDependencies() async {
+    super.didChangeDependencies();
+    if (_categories.isEmpty) {
+      await _retrieveLocalCategories();
+    }
+  }
 
-    for (var i = 0; i < _categoryNames.length; i++) {
+  Future<void> _retrieveLocalCategories() async{
+    final dataJson = DefaultAssetBundle.of(context).loadString('assets/data/regular_units.json');
+    final unitData = JsonDecoder().convert(await dataJson);
+    if (unitData is! Map) {
+      throw ('Data retrieved from API is not a Map');
+    }
+
+    var index = 0;
+    unitData.keys.forEach((key) {
+      final List<Unit> units = unitData[key].map<Unit>((dynamic data) => Unit.fromJson(data)).toList();
       var category = Category(
-        name: _categoryNames[i],
+        name: key,
+        units: units,
+        color: _baseColors[index],
         icon: icon,
-        color: _baseColors[i],
-        units: _retrieveUnitList(_categoryNames[i]),
       );
 
-      if (i == 0) {
-        _defaultCategory = category;
-      }
-      _categories.add(category);
-    }
+      setState(() {
+        if (index == 0) {
+          _defaultCategory = category;
+        }
+        _categories.add(category);
+      });
+
+      index += 1;
+    });
   }
 
   /// function to call on category tap
@@ -115,17 +123,6 @@ class _CategoryRouteState extends State<CategoryRoute> {
         }).toList(),
       );
     }
-  }
-
-  /// Returns a list of mock [Unit]s.
-  List<Unit> _retrieveUnitList(String categoryName) {
-    return List.generate(10, (int i) {
-      i += 1;
-      return Unit(
-        name: '$categoryName Unit $i',
-        conversion: i.toDouble(),
-      );
-    });
   }
 
   /// builds the category routes

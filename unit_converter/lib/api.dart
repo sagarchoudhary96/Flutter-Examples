@@ -26,6 +26,7 @@ class Api {
       String category, String amount, String fromUnit, String toUnit) async {
     final uri = Uri.https(_url, '$category/convert',
         {'amount': amount, 'from': fromUnit, 'to': toUnit});
+
     final jsonResponse = await _getJson(uri);
 
     if (jsonResponse == null || jsonResponse['status'] == null) {

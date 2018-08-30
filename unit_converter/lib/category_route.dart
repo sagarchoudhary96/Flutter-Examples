@@ -110,6 +110,13 @@ class _CategoryRouteState extends State<CategoryRoute> {
   }
 
   Future<void> _retrieveApiCategory() async {
+    setState(() {
+      _categories.add(Category(
+          name: apiCategories['name'],
+          icon: _icons.last,
+          color: _baseColors.last,
+          units: []));
+    });
     final api = Api();
     final jsonData = await api.getUnits(apiCategories['route']);
 
@@ -120,6 +127,7 @@ class _CategoryRouteState extends State<CategoryRoute> {
       }
 
       setState(() {
+        _categories.removeLast();
         _categories.add(Category(
             name: apiCategories['name'],
             icon: _icons.last,
@@ -140,10 +148,16 @@ class _CategoryRouteState extends State<CategoryRoute> {
   Widget _listViewBuilder(Orientation deviceOrientation) {
     if (deviceOrientation == Orientation.portrait) {
       return ListView.builder(
-        itemBuilder: (BuildContext context, int index) => CategoryTile(
-              category: _categories[index],
-              onTap: _onCategoryTap,
-            ),
+        itemBuilder: (BuildContext context, int index) {
+          var _category = _categories[index];
+          return CategoryTile(
+            category: _category,
+            onTap: _category.name == apiCategories['name'] &&
+                    _category.units.isEmpty
+                ? null
+                : _onCategoryTap,
+          );
+        },
         itemCount: _categories.length,
       );
     } else {
@@ -163,6 +177,16 @@ class _CategoryRouteState extends State<CategoryRoute> {
   /// builds the category routes
   @override
   Widget build(BuildContext context) {
+    if (_categories.isEmpty) {
+      return Center(
+        child: Container(
+          width: 180.0,
+          height: 180.0,
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     assert(debugCheckHasMediaQuery(context));
     final listView = Padding(
       padding: EdgeInsets.only(

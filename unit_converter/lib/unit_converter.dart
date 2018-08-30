@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:unit_converter/unit.dart';
@@ -24,6 +26,7 @@ class _UnitConverterState extends State<UnitConverter> {
   String _convertedVal = '';
   List<DropdownMenuItem> _unitItems;
   bool _showError = false;
+  bool _showErrorUI = false;
   final _inputKey = GlobalKey(debugLabel: "inputText");
 
   /// initial State
@@ -72,6 +75,11 @@ class _UnitConverterState extends State<UnitConverter> {
       if (_inputVal != null) {
         _updateConversion();
       }
+      if (_showErrorUI) {
+        setState(() {
+          _showErrorUI = false;
+        });
+      }
     });
   }
 
@@ -92,16 +100,22 @@ class _UnitConverterState extends State<UnitConverter> {
   }
 
   /// convert the input value
-  void _updateConversion() async {
+  Future<void> _updateConversion() async {
     if (widget.category.name == apiCategories['name']) {
       final api = Api();
       print("calling api: $_inputVal");
       final conversion = await api.convert(apiCategories['route'],
           _inputVal.toString(), _fromValue.name, _toValue.name);
 
-      setState(() {
-        _convertedVal = _format(conversion);
-      });
+      if (conversion == null) {
+        setState(() {
+          _showErrorUI = true;
+        });
+      } else {
+        setState(() {
+          _convertedVal = _format(conversion);
+        });
+      }
     } else {
       setState(() {
         _convertedVal =
@@ -170,7 +184,6 @@ class _UnitConverterState extends State<UnitConverter> {
           ///Input Field
           TextField(
             key: _inputKey,
-            autofocus: true,
             style: Theme.of(context).textTheme.display1,
             decoration: InputDecoration(
                 labelStyle: Theme.of(context).textTheme.display1,
@@ -256,6 +269,38 @@ class _UnitConverterState extends State<UnitConverter> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.category.units == null ||
+        (widget.category.name == apiCategories['name'] && _showErrorUI)) {
+      return SingleChildScrollView(
+        child: Container(
+          margin: _padding,
+          padding: _padding,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16.0),
+            color: widget.category.color['error'],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 180.0,
+                color: Colors.white,
+              ),
+              Text(
+                "Oh no! We can't connect right now!",
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.headline.copyWith(
+                      color: Colors.white,
+                    ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     final converter = ListView(
       children: <Widget>[
         _inputWidget(),

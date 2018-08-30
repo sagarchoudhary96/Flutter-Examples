@@ -6,8 +6,7 @@ import 'category_tile.dart';
 import 'backdrop.dart';
 import 'dart:async';
 import 'dart:convert';
-
-final icon = Icons.cake;
+import 'api.dart';
 
 class CategoryRoute extends StatefulWidget {
   const CategoryRoute();
@@ -58,16 +57,30 @@ class _CategoryRouteState extends State<CategoryRoute> {
     }),
   ];
 
+  static const _icons = <String>[
+    'assets/icons/length.png',
+    'assets/icons/area.png',
+    'assets/icons/volume.png',
+    'assets/icons/mass.png',
+    'assets/icons/time.png',
+    'assets/icons/digital_storage.png',
+    'assets/icons/power.png',
+    'assets/icons/currency.png',
+  ];
+
   @override
   Future<void> didChangeDependencies() async {
     super.didChangeDependencies();
     if (_categories.isEmpty) {
       await _retrieveLocalCategories();
+      await _retrieveApiCategory();
     }
   }
 
-  Future<void> _retrieveLocalCategories() async{
-    final dataJson = DefaultAssetBundle.of(context).loadString('assets/data/regular_units.json');
+  Future<void> _retrieveLocalCategories() async {
+    final dataJson = DefaultAssetBundle
+        .of(context)
+        .loadString('assets/data/regular_units.json');
     final unitData = JsonDecoder().convert(await dataJson);
     if (unitData is! Map) {
       throw ('Data retrieved from API is not a Map');
@@ -75,12 +88,14 @@ class _CategoryRouteState extends State<CategoryRoute> {
 
     var index = 0;
     unitData.keys.forEach((key) {
-      final List<Unit> units = unitData[key].map<Unit>((dynamic data) => Unit.fromJson(data)).toList();
+      final List<Unit> units = unitData[key]
+          .map<Unit>((dynamic data) => Unit.fromJson(data))
+          .toList();
       var category = Category(
         name: key,
         units: units,
         color: _baseColors[index],
-        icon: icon,
+        icon: _icons[index],
       );
 
       setState(() {
@@ -92,6 +107,26 @@ class _CategoryRouteState extends State<CategoryRoute> {
 
       index += 1;
     });
+  }
+
+  Future<void> _retrieveApiCategory() async {
+    final api = Api();
+    final jsonData = await api.getUnits(apiCategories['route']);
+
+    if (jsonData != null) {
+      final units = <Unit>[];
+      for (var unit in jsonData) {
+        units.add(Unit.fromJson(unit));
+      }
+
+      setState(() {
+        _categories.add(Category(
+            name: apiCategories['name'],
+            icon: _icons.last,
+            color: _baseColors.last,
+            units: units));
+      });
+    }
   }
 
   /// function to call on category tap

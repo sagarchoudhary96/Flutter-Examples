@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 import 'package:unit_converter/unit.dart';
 import 'category.dart';
+import 'api.dart';
 
 const _padding = EdgeInsets.all(16.0);
 
@@ -23,6 +24,7 @@ class _UnitConverterState extends State<UnitConverter> {
   String _convertedVal = '';
   List<DropdownMenuItem> _unitItems;
   bool _showError = false;
+  final _inputKey = GlobalKey(debugLabel: "inputText");
 
   /// initial State
   @override
@@ -67,6 +69,9 @@ class _UnitConverterState extends State<UnitConverter> {
     setState(() {
       _fromValue = widget.category.units[0];
       _toValue = widget.category.units[1];
+      if (_inputVal != null) {
+        _updateConversion();
+      }
     });
   }
 
@@ -87,11 +92,22 @@ class _UnitConverterState extends State<UnitConverter> {
   }
 
   /// convert the input value
-  void _updateConversion() {
-    setState(() {
-      _convertedVal =
-          _format(_inputVal * (_toValue.conversion / _fromValue.conversion));
-    });
+  void _updateConversion() async {
+    if (widget.category.name == apiCategories['name']) {
+      final api = Api();
+      print("calling api: $_inputVal");
+      final conversion = await api.convert(apiCategories['route'],
+          _inputVal.toString(), _fromValue.name, _toValue.name);
+
+      setState(() {
+        _convertedVal = _format(conversion);
+      });
+    } else {
+      setState(() {
+        _convertedVal =
+            _format(_inputVal * (_toValue.conversion / _fromValue.conversion));
+      });
+    }
   }
 
   void _updateInputVal(String value) {
@@ -153,6 +169,8 @@ class _UnitConverterState extends State<UnitConverter> {
         children: <Widget>[
           ///Input Field
           TextField(
+            key: _inputKey,
+            autofocus: true,
             style: Theme.of(context).textTheme.display1,
             decoration: InputDecoration(
                 labelStyle: Theme.of(context).textTheme.display1,

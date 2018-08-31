@@ -10,6 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Charts',
       theme: new ThemeData(
         primarySwatch: Colors.blue,
@@ -27,7 +28,7 @@ class ChartPage extends StatefulWidget {
 class ChartPageState extends State<ChartPage> with TickerProviderStateMixin {
   final random = Random();
   AnimationController animation;
-  BarTween tween;
+  BarChartTween tween;
 
   @override
   void initState() {
@@ -36,7 +37,7 @@ class ChartPageState extends State<ChartPage> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    tween = BarTween(Bar(0.0), Bar(50.0));
+    tween = BarChartTween(BarChart.empty(), BarChart.random(random));
     animation.forward();
   }
 
@@ -48,9 +49,9 @@ class ChartPageState extends State<ChartPage> with TickerProviderStateMixin {
 
   void changeData() {
     setState(() {
-      tween = BarTween(
+      tween = BarChartTween(
         tween.evaluate(animation),
-        Bar(random.nextDouble() * 100.0),
+        BarChart.random(random),
       );
       animation.forward(from: 0.0);
     });

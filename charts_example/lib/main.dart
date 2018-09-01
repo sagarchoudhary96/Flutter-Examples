@@ -29,6 +29,7 @@ class ChartPageState extends State<ChartPage> with TickerProviderStateMixin {
   final random = Random();
   AnimationController animation;
   BarChartTween tween;
+  static const size = const Size(200.0, 100.0);
 
   @override
   void initState() {
@@ -37,7 +38,7 @@ class ChartPageState extends State<ChartPage> with TickerProviderStateMixin {
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
-    tween = BarChartTween(BarChart.empty(), BarChart.random(random));
+    tween = BarChartTween(BarChart.empty(size), BarChart.random(size, random));
     animation.forward();
   }
 
@@ -51,7 +52,7 @@ class ChartPageState extends State<ChartPage> with TickerProviderStateMixin {
     setState(() {
       tween = BarChartTween(
         tween.evaluate(animation),
-        BarChart.random(random),
+        BarChart.random(size, random),
       );
       animation.forward(from: 0.0);
     });
@@ -60,9 +61,7 @@ class ChartPageState extends State<ChartPage> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: new AppBar(
-          title: new Text('Charts')
-      ),
+      appBar: new AppBar(title: new Text('Charts')),
       body: Center(
         child: CustomPaint(
           size: Size(200.0, 100.0),

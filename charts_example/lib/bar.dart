@@ -6,29 +6,40 @@ import 'dart:math';
 import 'color_palette.dart';
 
 class BarChart {
-  static const int barCount = 5;
+  BarChart(this.bars);
+
   final List<Bar> bars;
 
-  BarChart(this.bars) {
-    assert(bars.length == barCount);
+  factory BarChart.empty(Size size) {
+    return BarChart(<Bar>[]);
   }
 
-  /// constructor for empty bars
-  factory BarChart.empty() {
-    return BarChart(List.filled(barCount, Bar(0.0, Colors.transparent)));
-  }
-
-  /// constructor for random bars
-  factory BarChart.random(Random random) {
-    final Color color = ColorPalette.primary.random(random);
-    return BarChart(List.generate(
-        barCount, (i) => Bar(random.nextDouble() * 100.0, color)));
+  factory BarChart.random(Size size, Random random) {
+    const widthFraction = 0.75;
+    const minBarDistance = 20.0;
+    final barCount = random.nextInt((size.width / minBarDistance).floor()) + 1;
+    final barDistance = size.width / (1 + barCount);
+    final barWidth = barDistance * widthFraction;
+    final startX = barDistance - barWidth / 2;
+    final color = ColorPalette.primary.random(random);
+    final bars = List.generate(
+        barCount,
+        (i) => Bar(startX + i * barDistance, barWidth,
+            random.nextDouble() * size.height, color));
+    return BarChart(bars);
   }
 
   static BarChart lerp(BarChart begin, BarChart end, double t) {
-    return BarChart(List.generate(
-        barCount, (i) => Bar.lerp(begin.bars[i], end.bars[i], t)));
+    final barCount = max(begin.bars.length, end.bars.length);
+    final bars = List.generate(
+        barCount,
+        (i) => Bar.lerp(begin._barOrNull(i) ?? end.bars[i].collapsed,
+            end._barOrNull(i) ?? begin.bars[i].collapsed, t));
+
+    return BarChart(bars);
   }
+
+  Bar _barOrNull(int index) => (index < bars.length ? bars[index] : null);
 }
 
 class BarChartTween extends Tween<BarChart> {
@@ -41,13 +52,20 @@ class BarChartTween extends Tween<BarChart> {
 }
 
 class Bar {
-  Bar(this.height, this.color);
+  Bar(this.x, this.width, this.height, this.color);
 
   final double height;
   final Color color;
+  final double x;
+  final double width;
+
+  Bar get collapsed => Bar(x, 0.0, 0.0, color);
 
   static Bar lerp(Bar begin, Bar end, double t) {
-    return Bar(lerpDouble(begin.height, end.height, t),
+    return Bar(
+        lerpDouble(begin.x, end.x, t),
+        lerpDouble(begin.width, end.width, t),
+        lerpDouble(begin.height, end.height, t),
         Color.lerp(begin.color, end.color, t));
   }
 }
@@ -78,9 +96,9 @@ class BarChartPainter extends CustomPainter {
 
     final paint = Paint()..style = PaintingStyle.fill;
     final chart = animation.value;
-    final barDistance = size.width / (1+ chart.bars.length);
+    final barDistance = size.width / (1 + chart.bars.length);
     final barWidth = barDistance * widthFraction;
-    var x = barDistance - barWidth/2;
+    var x = barDistance - barWidth / 2;
 
     for (final bar in chart.bars) {
       drawBar(bar, x, barWidth, paint);

@@ -17,7 +17,7 @@ class ColorPalette {
 
   ColorPalette(this.colors) : assert(colors != null);
 
-  Color operator [] (int index) => colors[index%length];
+  Color operator [](int index) => colors[index % length];
 
   int get length => colors.length;
 

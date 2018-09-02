@@ -15,31 +15,57 @@ class BarChart {
   }
 
   factory BarChart.random(Size size, Random random) {
-    const widthFraction = 0.75;
-    const minBarDistance = 20.0;
-    final barCount = random.nextInt((size.width / minBarDistance).floor()) + 1;
+    const barWidthFraction = 0.75;
+    final ranks = selectRanks(random, ColorPalette.primary.length);
+    final barCount = ranks.length;
     final barDistance = size.width / (1 + barCount);
-    final barWidth = barDistance * widthFraction;
+    final barWidth = barDistance * barWidthFraction;
     final startX = barDistance - barWidth / 2;
-    final color = ColorPalette.primary.random(random);
     final bars = List.generate(
         barCount,
-        (i) => Bar(startX + i * barDistance, barWidth,
-            random.nextDouble() * size.height, color));
+        (i) => Bar(
+              ranks[i],
+              startX + i * barDistance,
+              barWidth,
+              random.nextDouble() * size.height,
+              ColorPalette.primary[ranks[i]],
+            ));
     return BarChart(bars);
+  }
+
+  static List<int> selectRanks(Random random, int cap) {
+    final ranks = <int>[];
+    var rank = 0;
+    while (true) {
+      if (random.nextDouble() < 0.2) rank++;
+      if (cap <= rank) break;
+      ranks.add(rank);
+      rank++;
+    }
+    return ranks;
   }
 
   static BarChart lerp(BarChart begin, BarChart end, double t) {
-    final barCount = max(begin.bars.length, end.bars.length);
-    final bars = List.generate(
-        barCount,
-        (i) => Bar.lerp(begin._barOrNull(i) ?? end.bars[i].collapsed,
-            end._barOrNull(i) ?? begin.bars[i].collapsed, t));
-
+    final bars = <Bar>[];
+    final bMax = begin.bars.length;
+    final eMax = end.bars.length;
+    var b = 0;
+    var e = 0;
+    while (b + e < bMax + eMax) {
+      if (b < bMax && (e == eMax || begin.bars[b] < end.bars[e])) {
+        bars.add(Bar.lerp(begin.bars[b], begin.bars[b].collapsed, t));
+        b++;
+      } else if (e < eMax && (b == bMax || end.bars[e] < begin.bars[b])) {
+        bars.add(Bar.lerp(end.bars[e].collapsed, end.bars[e], t));
+        e++;
+      } else {
+        bars.add(Bar.lerp(begin.bars[b], end.bars[e], t));
+        b++;
+        e++;
+      }
+    }
     return BarChart(bars);
   }
-
-  Bar _barOrNull(int index) => (index < bars.length ? bars[index] : null);
 }
 
 class BarChartTween extends Tween<BarChart> {
@@ -52,21 +78,28 @@ class BarChartTween extends Tween<BarChart> {
 }
 
 class Bar {
-  Bar(this.x, this.width, this.height, this.color);
+  Bar(this.rank, this.x, this.width, this.height, this.color);
 
   final double height;
   final Color color;
   final double x;
   final double width;
+  final int rank;
 
-  Bar get collapsed => Bar(x, 0.0, 0.0, color);
+  Bar get collapsed => Bar(rank, x, 0.0, 0.0, color);
+
+  bool operator <(Bar other) => rank < other.rank;
 
   static Bar lerp(Bar begin, Bar end, double t) {
+    if (begin == null && end == null) {
+      return null;
+    }
     return Bar(
-        lerpDouble(begin.x, end.x, t),
-        lerpDouble(begin.width, end.width, t),
-        lerpDouble(begin.height, end.height, t),
-        Color.lerp(begin.color, end.color, t));
+        begin.rank,
+        lerpDouble((begin ?? end).x, (end ?? begin).x, t),
+        lerpDouble(begin?.width, end?.width, t),
+        lerpDouble(begin?.height, end?.height, t),
+        Color.lerp((begin ?? end).color, (end ?? begin).color, t));
   }
 }
 

@@ -319,7 +319,10 @@ class _UnitConverterState extends State<UnitConverter> {
           return Center(
             child: Container(
               width: 450.0,
-              child: converter,
+              child: new GestureDetector(
+                onTap: () => FocusScope.of(context).requestFocus(new FocusNode()),
+                child: converter,
+              ),
             ),
           );
         }

@@ -13,10 +13,27 @@
 // limitations under the License.
 
 import 'package:flutter/material.dart';
+import 'colors.dart';
 
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
+}
+
+class AccentColorOverride extends StatelessWidget {
+  const AccentColorOverride({Key key, this.color, this.child})
+      : super(key: key);
+
+  final Color color;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Theme(
+      child: child,
+      data: Theme.of(context).copyWith(accentColor: color),
+    );
+  }
 }
 
 class _LoginPageState extends State<LoginPage> {
@@ -40,19 +57,25 @@ class _LoginPageState extends State<LoginPage> {
               ],
             ),
             SizedBox(height: 120.0),
-            TextField (
-              controller: _usernameController,
-              decoration: InputDecoration(
-                labelText: "Username"
+            AccentColorOverride(
+              color: kShrineBrown900,
+              child: TextField (
+                controller: _usernameController,
+                decoration: InputDecoration(
+                    labelText: "Username"
+                ),
               ),
             ),
             SizedBox(height: 12.0,),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(
-                labelText: "Password"
-              ),
-              obscureText: true,
+            AccentColorOverride(
+              color: kShrineBrown900,
+              child:  TextField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                      labelText: "Password"
+                  ),
+                  obscureText: true,
+                )
             ),
             SizedBox(height: 12.0),
             ButtonBar(
@@ -67,6 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 RaisedButton(
                   child: Text('Confirm'),
+                  elevation: 8.0,
                   onPressed: () {
                     // login to app
                     Navigator.pop(context);

@@ -11,34 +11,6 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: Return an AsymmetricView (104)
     // TODO: Pass Category variable to AsymmetricView (104)
-    return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text("Shrine"),
-        leading: IconButton(
-            icon: Icon(
-              Icons.menu,
-              semanticLabel: "menu",
-            ),
-            onPressed: () {}),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.search,
-              semanticLabel: "search",
-            ),
-            onPressed: () {},
-          ),
-          IconButton(
-            icon: Icon(
-              Icons.tune,
-              semanticLabel: 'filter',
-            ),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: AsymmetricView(products: ProductsRepository.loadProducts(Category.all),),
-    );
+    return AsymmetricView(products: ProductsRepository.loadProducts(Category.all));
   }
 }

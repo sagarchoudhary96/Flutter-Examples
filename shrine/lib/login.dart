@@ -59,24 +59,21 @@ class _LoginPageState extends State<LoginPage> {
             SizedBox(height: 120.0),
             AccentColorOverride(
               color: kShrineBrown900,
-              child: TextField (
+              child: TextField(
                 controller: _usernameController,
-                decoration: InputDecoration(
-                    labelText: "Username"
-                ),
+                decoration: InputDecoration(labelText: "Username"),
               ),
             ),
-            SizedBox(height: 12.0,),
-            AccentColorOverride(
-              color: kShrineBrown900,
-              child:  TextField(
-                  controller: _passwordController,
-                  decoration: InputDecoration(
-                      labelText: "Password"
-                  ),
-                  obscureText: true,
-                )
+            SizedBox(
+              height: 12.0,
             ),
+            AccentColorOverride(
+                color: kShrineBrown900,
+                child: TextField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(labelText: "Password"),
+                  obscureText: true,
+                )),
             SizedBox(height: 12.0),
             ButtonBar(
               children: <Widget>[

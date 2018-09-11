@@ -19,6 +19,7 @@ import 'login.dart';
 import 'colors.dart';
 import 'backdrop.dart';
 import 'model/product.dart';
+import 'category_menu.dart';
 
 final ThemeData _theme = _buildShrineTheme();
 
@@ -61,25 +62,10 @@ TextTheme _buildShrineTextTheme(TextTheme base) {
       );
 }
 
-// TODO: Convert ShrineApp to stateful widget (104)
-class ShrineApp extends StatelessWidget {
+class ShrineApp extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Shrine',
-      debugShowCheckedModeBanner: false,
-      home: Backdrop(
-          currentCategory: Category.all,
-          frontLayer: HomePage(),
-          backLayer: Container(
-            color: kShrinePink400,
-          ),
-          backTitle: Text('Menu'),
-          frontTitle: Text('Shrine')),
-      initialRoute: '/login',
-      onGenerateRoute: _getRoute,
-      theme: _theme,
-    );
+  _ShrineAppState createState() {
+    return new _ShrineAppState();
   }
 
   Route<dynamic> _getRoute(RouteSettings settings) {
@@ -91,6 +77,36 @@ class ShrineApp extends StatelessWidget {
       settings: settings,
       builder: (BuildContext context) => LoginPage(),
       fullscreenDialog: true,
+    );
+  }
+}
+
+class _ShrineAppState extends State<ShrineApp> {
+  Category _currentCategory = Category.all;
+
+  void _onCategoryTap(Category category) {
+    setState(() {
+      _currentCategory = category;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Shrine',
+      debugShowCheckedModeBanner: false,
+      home: Backdrop(
+          currentCategory: Category.all,
+          frontLayer: HomePage(
+            category: _currentCategory,
+          ),
+          backLayer: CategoryMenu(
+              onCategoryTap: _onCategoryTap, currentCategory: _currentCategory),
+          backTitle: Text('Menu'),
+          frontTitle: Text('Shrine')),
+      initialRoute: '/login',
+      onGenerateRoute: widget._getRoute,
+      theme: _theme,
     );
   }
 }

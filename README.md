@@ -12,6 +12,12 @@ This Repository Contains Flutter Apps Examples for Beginners.
 ### Adding New Example App
  
  * Fork the repository and clone to your local machine by following the steps above.
+ * Create an issue With title as **name** of the App you want to add. Wait until it is assigned to you.
+ * Add your name to the CONTRIBUTORS.md file in format
+ ```
+ ## Name: Your name
+ ## GitHub: [Your github id](url of the profile)
+ ```
  * Create a separate branch in format `app-name`
  ```
  git checkout -b app-name

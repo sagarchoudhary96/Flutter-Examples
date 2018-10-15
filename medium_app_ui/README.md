@@ -1,15 +1,13 @@
-# Startup_Namer
+# Medium_App_Ui
 
-A simple mobile app that generates proposed names for a startup company and allows you to favourite the names.
-This is an example app from google CodeLab [writing your first flutter app](https://codelabs.developers.google.com/codelabs/first-flutter-app-pt1/index.html).
-
+Medium App UI clone made in flutter that shows implementation of drawer and listview.
 
 
 ## Setup
 
 1. Follow the steps to setup Flutter and Repository from the main [Readme](https://github.com/sagarchoudhary96/Flutter-Examples/blob/master/README.md).
 
-2. Navigate to **startup_namer** project directory in terminal.
+2. Navigate to **medium_app_ui** project directory in terminal.
 
 3. Run `flutter packages get` to install the required packages.
 
@@ -18,5 +16,5 @@ This is an example app from google CodeLab [writing your first flutter app](http
 
 ## References
 
-* [Write your First Flutter App CodeLab](https://codelabs.developers.google.com/codelabs/first-flutter-app-pt1)
+* [Flutter Challenge: The Medium App](https://blog.usejournal.com/flutter-challenge-the-medium-app-5f64a0f3c764)
 

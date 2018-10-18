@@ -1,4 +1,4 @@
 # Contributing
 
- ## Name: Harshil Agrawal
- ## GitHub: [harshil1712](https://github.com/harshil1712)
+* [Ramanpreet Singh](https://github.com/Ramanpreet6262)
+* [Harshil Agrawal](https://github.com/harshil1712)

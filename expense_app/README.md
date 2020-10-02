@@ -6,7 +6,7 @@ A personal expense tracker that shows implementation of listview builders,themin
 
 1. Follow the steps to setup Flutter and Repository from the main [Readme](https://github.com/sagarchoudhary96/Flutter-Examples/blob/master/README.md).
 
-2. Navigate to **Expense-App** project directory in terminal.
+2. Navigate to **expense_app** project directory in terminal.
 
 3. Run `flutter packages get` to install the required packages.
 
